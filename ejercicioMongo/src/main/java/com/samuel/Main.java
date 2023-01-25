@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    static MongoClient mongoClient;
     static MongoDatabase db;
     static MongoCollection mco;
     static Scanner sc;
@@ -33,11 +32,11 @@ public class Main {
         while(eleccion!=0)
         {
             tiempoEspera(1);
-            Scanner sc = new Scanner(System.in);
-            boolean salir = false;
+            sc = new Scanner(System.in);
+
             System.out.println("\nBienvenido a la base de datos de videojuegos, elige una opción del menú para continuar: ");
             System.out.println("1. Realizar inserción única. \n2. Realizar varias inserciones. \n3. Eliminar un videojuego. \n4. Modificar un videojuego. \n5. Mostrar todos los videojuegos de la colección. \n6. Búsqueda simple de un videojuego. \n7. Búsqueda compleja de un videojuego. ");
-            System.out.print("\nElige una opción: "); eleccion = sc.nextInt();
+            System.out.print("\nElige una opción: "); eleccion = sc.nextInt(); sc.nextLine();
 
                 switch(eleccion)
                 {
@@ -53,39 +52,71 @@ public class Main {
 
     private static void update(MongoCollection mco) {
 
-        if(hayJuegos(mco)==true)
+        //compruebo si hay juegos en la coleccion
+        if(hayJuegos(mco))
         {
             mostrarVideojuegos(mco);
             System.out.print("Has elegido la opción de modificar un videojuego existente, introduce el id del videojuego que quieras modificar: "); int id = sc.nextInt(); sc.nextLine();
-            System.out.print("¿Qué campo deseas modificar? Introduce 'titulo', 'desarrollador' o 'precio' (sin las comillas) para modificarlo: "); String eleccion = sc.nextLine();
-            eleccion.toLowerCase();
             Document filtro = new Document("_id",id);
-            Document resultado;
-            String tituloActual = "";
             MongoCursor cursor = mco.find(filtro).iterator();
-            switch(eleccion)
+            //compruebo si el id introducido existe en la coleccion
+            if(cursor.hasNext())
             {
-                case "titulo":
-                    if(cursor.hasNext())
-                    {
-                        resultado = (Document) cursor.next();
-                        tituloActual = resultado.getString("titulo");
-                    }
+                System.out.print("¿Qué campo deseas modificar? Introduce 'titulo', 'desarrollador' o 'precio' (sin las comillas) para modificarlo: "); String eleccion = sc.nextLine();
+                eleccion.toLowerCase();
 
-                    System.out.println("El título actual del videojuego con id: " + id + " es: " + tituloActual);
-                    System.out.print("Introduce el nuevo título: "); String nuevoTitulo = sc.nextLine();
-                    mco.updateOne(filtro,Updates.set("titulo",nuevoTitulo));
+                Document resultado;
+                String tituloActual = "", desarrolladorActual = "";
+                double precioActual = 0;
 
-                    break;
+                switch(eleccion)
+                {
+                    case "titulo":
+                        if(cursor.hasNext())
+                        {
+                            resultado = (Document) cursor.next();
+                            tituloActual = resultado.getString("titulo");
+                        }
 
-                case "desarrollador":
+                        System.out.println("El título actual del videojuego con id: " + id + " es: " + tituloActual);
+                        System.out.print("Introduce el nuevo título: "); String nuevoTitulo = sc.nextLine();
+                        mco.updateOne(filtro,Updates.set("titulo",nuevoTitulo));
 
-                    break;
+                        break;
 
-                case "precio": double precio = Integer.parseInt(eleccion);
+                    case "desarrollador":
+                        if(cursor.hasNext())
+                        {
+                            resultado = (Document) cursor.next();
+                            desarrolladorActual = resultado.getString("desarrollador");
+                        }
+
+                        System.out.println("El desarrollador actual del videojuego con id: " + id + " es: " + desarrolladorActual);
+                        System.out.print("Introduce el nuevo título: "); String nuevoDesarrollador = sc.nextLine();
+                        mco.updateOne(filtro,Updates.set("desarrollador",nuevoDesarrollador));
+
+                        break;
+
+                    case "precio": double precio = Double.parseDouble(eleccion);
+                        if(cursor.hasNext())
+                        {
+                            resultado = (Document) cursor.next();
+                            precioActual = resultado.getDouble("precio");
+                        }
+
+                        System.out.println("El precio actual del videojuego con id: " + id + " es: " + precioActual);
+                        System.out.print("Introduce el nuevo precio: "); double nuevoPrecio = sc.nextDouble();
+                        mco.updateOne(filtro,Updates.set("desarrollador",nuevoPrecio));
+                }
+                System.out.println("Actualización realizada");
+                tiempoEspera(1);
             }
-            System.out.println("Actualización realizada");
-            tiempoEspera(1);
+            else
+            {
+                System.out.println("No hay videojuegos con ese id en la colección, saliendo al menú...");
+                tiempoEspera(1);
+            }
+
         }
         else
         {
@@ -190,6 +221,7 @@ public class Main {
 
     public static void mostrarVideojuegos(MongoCollection mco)
     {
+        tiempoEspera(1);
         if(hayJuegos(mco))
         {
             MongoCollection<Document> coleccion = db.getCollection("videojuegos");
@@ -197,7 +229,7 @@ public class Main {
             for(Document doc : coleccion.find())
             {
                 System.out.println("id: " + doc.getLong("_id") + ", titulo: " + doc.getString("titulo") + ", desarrollador: " + doc.getString("desarrollador") + ", precio: " + doc.getDouble("precio"));
-                System.out.println("-----------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------------");
             }
             tiempoEspera(3);
         }
