@@ -2,16 +2,14 @@
 
 Realizar una aplicación que conecte con una base de datos NoSQL (MongoDB), según los requisitos que se enumeran a continuación
 
-Requisitos mínimos
+Requisitos mínimos y Otras funcionalidades suplementarias (sugerencias)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Se podrán producir altas de documentos, de uno en uno o en grupo.
 -  Se podrán modificar los documentos existentes.
 -  Se podrán eliminar documentos.
 -  Se podrán llevar a cabo búsquedas simples (por un campo) y complejas (utilizando condiciones para más de un campo).
-
-Otras funcionalidades suplementarias (sugerencias)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Ampliar la base de datos a más de una colección, en la que al menos en una de ellas se trabaje con datos mapeados desde alguna/s clase/s POJO.
 -  Utilizar alguna colección que contenga estructuras complejas (arrays, datos estructurados, . . .).
