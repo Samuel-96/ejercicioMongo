@@ -11,7 +11,7 @@ Requisitos mínimos
 -  Se podrán llevar a cabo búsquedas simples (por un campo) y complejas (utilizando condiciones para más de un campo).
 
 Otras funcionalidades suplementarias (sugerencias)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Ampliar la base de datos a más de una colección, en la que al menos en una de ellas se trabaje con datos mapeados desde alguna/s clase/s POJO.
 -  Utilizar alguna colección que contenga estructuras complejas (arrays, datos estructurados, . . .).
