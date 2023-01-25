@@ -18,11 +18,9 @@ public class Main {
     public static void main(String[] args) {
         try (MongoClient mc = MongoClients.create("mongodb://localhost/samuel"))
         {
-             db = mc.getDatabase("samuel");
-             mco = db.getCollection("videojuegos");
-             sc = new Scanner(System.in);
-
-
+            db = mc.getDatabase("samuel");
+            mco = db.getCollection("videojuegos");
+            sc = new Scanner(System.in);
             menu();
         }
     }
@@ -49,13 +47,188 @@ public class Main {
                     case 5: mostrarVideojuegos(mco); break;
                     case 6: cargarDatosDePrueba(mco); break;
                     case 7: busquedaSimple(mco); break;
+                    case 8: busquedaCompleja(mco); break;
                     case 9: eliminarColeccion(mco); break;
                 }
         }
     }
 
-    private static void busquedaSimple(MongoCollection mco) {
+    private static void busquedaCompleja(MongoCollection mco) {
+        if(hayJuegos(mco))
+        {
+            tiempoEspera(1);
+            System.out.print("¿Quieres buscar por id, título, desarrollador o precio? (introduce 'id','titulo','precio','desarrollador' sin comillas simples: ");
+            String eleccion = sc.nextLine();
+            eleccion = eleccion.toLowerCase();
+            //compruebo si se ha introducido la palabra correcta
+            if(eleccion.equals("id") || eleccion.equals("titulo") || eleccion.equals("desarrollador") || eleccion.equals("precio"))
+            {
+                MongoCursor cursor;
+                Document d;
+                switch(eleccion)
+                {
+                    case "id":
+                        System.out.print("Introduce el id del videojuego/videojuegos que quieras buscar: "); long id = sc.nextLong(); sc.nextLine();
+                        cursor = mco.find(new Document("_id",id)).iterator();
+                        if(!cursor.hasNext())
+                        {
+                            System.out.println("No se encuentra un videojuego con ese id");
+                        }
+                        while(cursor.hasNext())
+                        {
+                            d = (Document) cursor.next();
+                            System.out.println("El videojuego con id " + id + " es " + d.getString("titulo") + ", desarrollado por " + d.getString("desarrollador") + " y cuesta " + d.getDouble( "precio") + " euros.");
+                        }
+                        break;
 
+                    case "titulo":
+                        System.out.print("Introduce el titulo del videojuego/videojuegos que quieras buscar: "); String titulo = sc.nextLine();
+                        cursor = mco.find(new Document("titulo",titulo)).iterator();
+                        if(!cursor.hasNext())
+                        {
+                            System.out.println("No se encuentra un videojuego con ese título");
+                        }
+                        while(cursor.hasNext())
+                        {
+                            d = (Document) cursor.next();
+                            System.out.println("El videojuego con id " + d.getLong("_id") + " es " + titulo + ", desarrollado por " + d.getString("desarrollador") + " y cuesta " + d.getDouble( "precio") + " euros.");
+                        }
+
+                        break;
+
+                    case "desarrollador":
+
+                        System.out.print("Introduce el desarrollador del videojuego/videojuegos que quieras buscar: "); String desarrollador = sc.nextLine();
+                        cursor = mco.find(new Document("desarrollador",desarrollador)).iterator();
+                        if(!cursor.hasNext())
+                        {
+                            System.out.println("No se encuentra un videojuego con ese desarrollador");
+                        }
+                        while(cursor.hasNext())
+                        {
+                            d = (Document) cursor.next();
+                            System.out.println("El videojuego con id " + d.getLong("_id") + " es " + d.getString("titulo") + ", desarrollado por " + desarrollador + " y cuesta " + d.getDouble( "precio") + " euros.");
+                        }
+
+
+                        break;
+
+                    case "precio":
+                        System.out.print("Introduce el precio del videojuego/videojuegos que quieras buscar: "); double precio = sc.nextDouble(); sc.nextLine();
+                        cursor = mco.find(new Document("precio",precio)).iterator();
+                        if(!cursor.hasNext())
+                        {
+                            System.out.println("No se encuentra un videojuego con ese precio");
+                        }
+                        while(cursor.hasNext())
+                        {
+                            d = (Document) cursor.next();
+                            System.out.println("El videojuego con id " + d.getLong("_id") + " es " + d.getString("titulo") + ", desarrollado por " + d.getString("desarrollador") + " y cuesta " + precio + " euros.");
+                        }
+
+
+                }
+                tiempoEspera(2);
+            }
+            else
+            {
+                System.out.println("No has introducido 'id', 'titulo', 'desarrollador' o 'precio'. Saliendo al menú...");
+            }
+
+        }
+        else
+        {
+            System.out.println("No hay juegos en la colección, saliendo al menú...");
+        }
+    }
+
+    private static void busquedaSimple(MongoCollection mco) {
+        if(hayJuegos(mco))
+        {
+            tiempoEspera(1);
+            System.out.print("¿Quieres buscar por id, título, desarrollador o precio? (introduce 'id','titulo','precio','desarrollador' sin comillas simples: ");
+            String eleccion = sc.nextLine();
+            eleccion = eleccion.toLowerCase();
+            //compruebo si se ha introducido la palabra correcta
+            if(eleccion.equals("id") || eleccion.equals("titulo") || eleccion.equals("desarrollador") || eleccion.equals("precio"))
+            {
+                MongoCursor cursor;
+                Document d;
+                switch(eleccion)
+                {
+                    case "id":
+                                System.out.print("Introduce el id del videojuego/videojuegos que quieras buscar: "); long id = sc.nextLong(); sc.nextLine();
+                                cursor = mco.find(new Document("_id",id)).iterator();
+                                if(!cursor.hasNext())
+                                {
+                                    System.out.println("No se encuentra un videojuego con ese id");
+                                }
+                                while(cursor.hasNext())
+                                {
+                                    d = (Document) cursor.next();
+                                    System.out.println("El videojuego con id " + id + " es " + d.getString("titulo") + ", desarrollado por " + d.getString("desarrollador") + " y cuesta " + d.getDouble( "precio") + " euros.");
+                                }
+                        break;
+
+                    case "titulo":
+                                System.out.print("Introduce el titulo del videojuego/videojuegos que quieras buscar: "); String titulo = sc.nextLine();
+                                cursor = mco.find(new Document("titulo",titulo)).iterator();
+                                if(!cursor.hasNext())
+                                {
+                                    System.out.println("No se encuentra un videojuego con ese título");
+                                }
+                                while(cursor.hasNext())
+                                {
+                                    d = (Document) cursor.next();
+                                    System.out.println("El videojuego con id " + d.getLong("_id") + " es " + titulo + ", desarrollado por " + d.getString("desarrollador") + " y cuesta " + d.getDouble( "precio") + " euros.");
+                                }
+
+                        break;
+
+                    case "desarrollador":
+
+                        System.out.print("Introduce el desarrollador del videojuego/videojuegos que quieras buscar: "); String desarrollador = sc.nextLine();
+                        cursor = mco.find(new Document("desarrollador",desarrollador)).iterator();
+                        if(!cursor.hasNext())
+                        {
+                            System.out.println("No se encuentra un videojuego con ese desarrollador");
+                        }
+                        while(cursor.hasNext())
+                        {
+                            d = (Document) cursor.next();
+                            System.out.println("El videojuego con id " + d.getLong("_id") + " es " + d.getString("titulo") + ", desarrollado por " + desarrollador + " y cuesta " + d.getDouble( "precio") + " euros.");
+                        }
+
+
+                        break;
+
+                    case "precio":
+                        System.out.print("Introduce el precio del videojuego/videojuegos que quieras buscar: "); double precio = sc.nextDouble(); sc.nextLine();
+                        cursor = mco.find(new Document("precio",precio)).iterator();
+                        if(!cursor.hasNext())
+                        {
+                            System.out.println("No se encuentra un videojuego con ese precio");
+                        }
+                        while(cursor.hasNext())
+                        {
+                            d = (Document) cursor.next();
+                            System.out.println("El videojuego con id " + d.getLong("_id") + " es " + d.getString("titulo") + ", desarrollado por " + d.getString("desarrollador") + " y cuesta " + precio + " euros.");
+                        }
+
+
+                }
+                tiempoEspera(2);
+            }
+            else
+            {
+                System.out.println("No has introducido 'id', 'titulo', 'desarrollador' o 'precio'. Saliendo al menú...");
+            }
+
+        }
+        else
+        {
+            System.out.println("No hay juegos en la colección, saliendo al menú...");
+        }
     }
 
     private static void eliminarColeccion(MongoCollection mco) {
@@ -118,52 +291,61 @@ public class Main {
             {
                 sc.nextLine();
                 System.out.print("¿Qué campo deseas modificar? Introduce 'titulo', 'desarrollador' o 'precio' (sin las comillas) para modificarlo: "); String eleccion = sc.nextLine();
-                eleccion.toLowerCase();
-
-                Document resultado;
-                String tituloActual = "", desarrolladorActual = "";
-                double precioActual = 0;
-                switch(eleccion)
+                eleccion = eleccion.toLowerCase();
+                //compruebo si se ha introducido la palabra correcta
+                if(eleccion.equals("titulo") || eleccion.equals("desarrollador") || eleccion.equals("precio"))
                 {
-                    case "titulo":
-                        if(cursor.hasNext())
-                        {
-                            resultado = (Document) cursor.next();
-                            tituloActual = resultado.getString("titulo");
-                        }
+                    Document resultado;
+                    String tituloActual = "", desarrolladorActual = "";
+                    double precioActual = 0;
+                    switch(eleccion)
+                    {
+                        case "titulo":
+                            if(cursor.hasNext())
+                            {
+                                resultado = (Document) cursor.next();
+                                tituloActual = resultado.getString("titulo");
+                            }
 
-                        System.out.println("El título actual del videojuego con id: " + id + " es: " + tituloActual);
-                        System.out.print("Introduce el nuevo título: "); String nuevoTitulo = sc.nextLine();
-                        mco.updateOne(filtro,Updates.set("titulo",nuevoTitulo));
+                            System.out.println("El título actual del videojuego con id: " + id + " es: " + tituloActual);
+                            System.out.print("Introduce el nuevo título: "); String nuevoTitulo = sc.nextLine();
+                            mco.updateOne(filtro,Updates.set("titulo",nuevoTitulo));
 
-                        break;
+                            break;
 
-                    case "desarrollador":
-                        if(cursor.hasNext())
-                        {
-                            resultado = (Document) cursor.next();
-                            desarrolladorActual = resultado.getString("desarrollador");
-                        }
+                        case "desarrollador":
+                            if(cursor.hasNext())
+                            {
+                                resultado = (Document) cursor.next();
+                                desarrolladorActual = resultado.getString("desarrollador");
+                            }
 
-                        System.out.println("El desarrollador actual del videojuego con id: " + id + " es: " + desarrolladorActual);
-                        System.out.print("Introduce el nuevo desarrollador: "); String nuevoDesarrollador = sc.nextLine();
-                        mco.updateOne(filtro,Updates.set("desarrollador",nuevoDesarrollador));
+                            System.out.println("El desarrollador actual del videojuego con id: " + id + " es: " + desarrolladorActual);
+                            System.out.print("Introduce el nuevo desarrollador: "); String nuevoDesarrollador = sc.nextLine();
+                            mco.updateOne(filtro,Updates.set("desarrollador",nuevoDesarrollador));
 
-                        break;
+                            break;
 
-                    case "precio":
-                        if(cursor.hasNext())
-                        {
-                            resultado = (Document) cursor.next();
-                            precioActual = resultado.getDouble("precio");
-                        }
+                        case "precio":
+                            if(cursor.hasNext())
+                            {
+                                resultado = (Document) cursor.next();
+                                precioActual = resultado.getDouble("precio");
+                            }
 
-                        System.out.println("El precio actual del videojuego con id: " + id + " es: " + precioActual);
-                        System.out.print("Introduce el nuevo precio: "); double nuevoPrecio = sc.nextDouble();
-                        mco.updateOne(filtro,Updates.set("precio",nuevoPrecio));
+                            System.out.println("El precio actual del videojuego con id: " + id + " es: " + precioActual);
+                            System.out.print("Introduce el nuevo precio: "); double nuevoPrecio = sc.nextDouble();
+                            mco.updateOne(filtro,Updates.set("precio",nuevoPrecio));
+                    }
+                    System.out.println("Actualización realizada");
+                    tiempoEspera(1);
                 }
-                System.out.println("Actualización realizada");
-                tiempoEspera(1);
+                else
+                {
+                    System.out.println("No has introducido 'titulo', 'desarrollador' o 'precio'. Saliendo al menú...");
+                    tiempoEspera(1);
+                }
+
             }
             else
             {
