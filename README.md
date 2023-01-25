@@ -4,7 +4,6 @@ Realizar una aplicación que conecte con una base de datos NoSQL (MongoDB), seg�
 
 Requisitos mínimos y Otras funcionalidades suplementarias (sugerencias)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Se podrán producir altas de documentos, de uno en uno o en grupo.
 -  Se podrán modificar los documentos existentes.
@@ -16,6 +15,7 @@ Requisitos mínimos y Otras funcionalidades suplementarias (sugerencias)
 -  Implementar alguna consulta con agregaciones
 -  Implementar alguna consulta con proyecciones
 -  Cualquier otra que a ti te parezca conveniente ...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
