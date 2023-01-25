@@ -29,7 +29,7 @@ public class Mapeo {
         try(MongoClient mongoClient = MongoClients.create(clientSettings))
         {
             MongoDatabase db = mongoClient.getDatabase("samuel");
-            MongoCollection<VideojuegoMapeo> videojuegos = db.getCollection("videojuegos",VideojuegoMapeo.class);
+            MongoCollection<VideojuegoMapeo> videojuegos = db.getCollection("videojuegosMapeados",VideojuegoMapeo.class);
             MongoCursor<VideojuegoMapeo> mc = videojuegos.find().iterator();
             while(mc.hasNext())
                 System.out.println(mc.next());
@@ -37,9 +37,11 @@ public class Mapeo {
             Desarrollador d2 = new Desarrollador("Square Enix",18,500);
             List<Desarrollador> desarrolladores = new ArrayList<>();
             desarrolladores.add(d1); desarrolladores.add(d2);
-            VideojuegoMapeo videojuegoMapeo = new VideojuegoMapeo("Final Fantasy X",39.90,desarrolladores);
+            VideojuegoMapeo videojuegoMapeo1 = new VideojuegoMapeo("Xenogears",39.90,desarrolladores);
+            VideojuegoMapeo videojuegoMapeo2 = new VideojuegoMapeo("Jet Set Radio",39.90,desarrolladores);
 
-            videojuegos.insertOne(videojuegoMapeo);
+            videojuegos.insertOne(videojuegoMapeo1);
+            videojuegos.insertOne(videojuegoMapeo2);
             System.out.println("Inserción realizada");
         }
         catch(Exception e)
