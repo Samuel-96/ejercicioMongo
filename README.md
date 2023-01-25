@@ -1,9 +1,8 @@
-#Ejercicio de MongoDB para la asignatura Acceso a Datos. Enunciado propuesto:
-
+Ejercicio de MongoDB para la asignatura Acceso a Datos. Enunciado propuesto:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Realizar una aplicación que conecte con una base de datos NoSQL (MongoDB), según los requisitos que se enumeran a continuación
 
 Requisitos mínimos y Otras funcionalidades suplementarias (sugerencias)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Se podrán producir altas de documentos, de uno en uno o en grupo.
 -  Se podrán modificar los documentos existentes.
