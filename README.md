@@ -25,5 +25,5 @@ modificación de documentos, eliminación de documentos y búsquedas tanto simpl
 
 También hay un paquete donde se encuentra la parte encargada del mapeo de POJO's con la clase instanciable VideojuegoMapeo y la clase Mapeo encargada de
 mapear la clase en la base de datos de Mongo. Al ejecutar la clase Mapeo se crea una colección nueva en la base de datos llamada videojuegosMapeados donde se pueden ver las dos inserciones realizadas cumpliendo con la parte del enunciado:
-Ampliar la base de datos a más de una colección, en la que al menos en una de ellas se trabaje con datos mapeados desde alguna/s clase/s POJO.
+"Ampliar la base de datos a más de una colección, en la que al menos en una de ellas se trabaje con datos mapeados desde alguna/s clase/s POJO."
 
