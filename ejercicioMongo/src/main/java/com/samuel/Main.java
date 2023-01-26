@@ -11,6 +11,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+//improts static necesarios para la utilizacion de proyecciones y agregaciones
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Accumulators.*;
+
 public class Main {
     static MongoDatabase db;
     static MongoCollection mco;
@@ -28,34 +35,91 @@ public class Main {
 
     public static void menu()
     {
-        int eleccion = 1;
-        while(eleccion!=0)
+        int eleccion;
+        while(true)
         {
             tiempoEspera(1);
             sc = new Scanner(System.in);
 
             System.out.println("\nBienvenido a la base de datos de videojuegos, elige una opción del menú para continuar: ");
-            System.out.println("1. Realizar inserción única. \n2. Realizar varias inserciones. \n3. Eliminar un videojuego. \n4. Modificar un videojuego. \n5. Mostrar todos los videojuegos de la colección. \n6. Cargar datos de prueba. \n7. Búsqueda simple de un videojuego. \n8. Búsqueda compleja de un videojuego. \n9. Eliminar todos los videojuegos de la colección. ");
+            System.out.println("1. Realizar inserción única. \n2. Realizar varias inserciones. \n3. Eliminar un videojuego. \n4. Modificar un videojuego. \n5. Mostrar todos los videojuegos de la colección. \n6. Cargar datos de prueba. \n7. Búsqueda simple de un videojuego. \n8. Búsqueda compleja de un videojuego. \n9. Eliminar todos los videojuegos de la colección. \n10. Consulta con agregaciones. \n11. Consulta con proyecciones.");
             System.out.print("\nElige una opción: "); eleccion = sc.nextInt(); sc.nextLine();
 
-            switch(eleccion)
-            {
-                default: System.exit(0);
-                case 1: insertOne(mco); break;
-                case 2: insertMany(mco); break;
-                case 3: delete(mco); break;
-                case 4: update(mco); break;
-                case 5: mostrarVideojuegos(mco); break;
-                case 6: cargarDatosDePrueba(mco); break;
-                case 7: busquedaSimple(mco); break;
-                case 8: busquedaCompleja(mco); break;
-                case 9: eliminarColeccion(mco); break;
+            switch (eleccion) {
+                default -> System.exit(0);
+                case 1 -> insertOne(mco);
+                case 2 -> insertMany(mco);
+                case 3 -> delete(mco);
+                case 4 -> update(mco);
+                case 5 -> mostrarVideojuegos(mco);
+                case 6 -> cargarDatosDePrueba(mco);
+                case 7 -> busquedaSimple(mco);
+                case 8 -> busquedaCompleja(mco);
+                case 9 -> eliminarColeccion(mco);
+                case 10 -> consultaAgregaciones(mco);
+                case 11 -> consultaProyecciones(mco);
             }
+        }
+    }
+
+    private static void consultaProyecciones(MongoCollection mco) {
+        //compruebo si hay videojuegos en la colección
+        if (hayJuegos(mco)) {
+            tiempoEspera(1);
+            System.out.print("Introduce el desarrollador de los videojuegos que quieras buscar: ");
+            String dev = sc.nextLine();
+            MongoCursor<Document> documentos = mco.find(eq("desarrollador",dev))
+                    .sort(ascending("titulo"))
+                    .projection(include("desarrollador","titulo")).iterator();
+            //si el cursor de mongo encuentra documentos los muestro
+            if(documentos.hasNext())
+            {
+                while(documentos.hasNext())
+                {
+                    //como el cursor, llamado documentos, es de tipo <Document> no es necesario castear a Document el resultado de next()
+                    Document d = documentos.next();
+                    System.out.println(d.toJson());
+                }
+            }
+            //si el cursor de mongo no encuentra documentos muestro un mensaje por pantalla
+            else
+            {
+                System.out.println("No se encuentran videojuegos con el desarrollador " + dev);
+            }
+            tiempoEspera(1);
+        }
+        //si no hay juegos muestro un mensje por pantalla
+        else{
+            System.out.println("No hay juegos en la colección, saliendo al menú...");
+        }
+
+    }
+
+    private static void consultaAgregaciones(MongoCollection mco) {
+        if(hayJuegos(mco))
+        {
+            tiempoEspera(1);
+            System.out.print("A continuación se mostrarán todos los desarrolladores de juegos que hay en la colección y se mostrará la suma del precio de cada videojuego que ha desarrollado");
+            //match se encarga de filtrar los documentos para que muestre los que encuentre con el campo desarrollador
+            //group se encarga de agrupar los resultados obtenidos en base al parámetro que se le pase
+            MongoCursor<Document> documentos = mco.aggregate(List.of(group("$desarrollador", sum("precio_juegos", "$precio")))).iterator();
+            while(documentos.hasNext())
+            {
+                Document d = documentos.next();
+                System.out.println(d.toJson());
+            }
+
+            tiempoEspera(1);
+        }
+        else
+        {
+            System.out.println("No hay videojuegos en la colección. Saliendo al menú...");
         }
     }
 
     private static void busquedaCompleja(MongoCollection mco) {
 
+        //Compruebo si hay juegos en la coleccion
         if (hayJuegos(mco))
         {
             tiempoEspera(1);
@@ -82,6 +146,7 @@ public class Main {
             tiempoEspera(1);
 
         }
+        //si no hay juegos lo muestro por pantalla
         else
         {
             System.out.println("No hay juegos en la colección, saliendo al menú...");
@@ -245,44 +310,37 @@ public class Main {
                     Document resultado;
                     String tituloActual = "", desarrolladorActual = "";
                     double precioActual = 0;
-                    switch(eleccion)
-                    {
-                        case "titulo":
-                            if(cursor.hasNext())
-                            {
+                    switch (eleccion) {
+                        case "titulo" -> {
+                            if (cursor.hasNext()) {
                                 resultado = (Document) cursor.next();
                                 tituloActual = resultado.getString("titulo");
                             }
-
                             System.out.println("El título actual del videojuego con id: " + id + " es: " + tituloActual);
-                            System.out.print("Introduce el nuevo título: "); String nuevoTitulo = sc.nextLine();
-                            mco.updateOne(filtro,Updates.set("titulo",nuevoTitulo));
-
-                            break;
-
-                        case "desarrollador":
-                            if(cursor.hasNext())
-                            {
+                            System.out.print("Introduce el nuevo título: ");
+                            String nuevoTitulo = sc.nextLine();
+                            mco.updateOne(filtro, Updates.set("titulo", nuevoTitulo));
+                        }
+                        case "desarrollador" -> {
+                            if (cursor.hasNext()) {
                                 resultado = (Document) cursor.next();
                                 desarrolladorActual = resultado.getString("desarrollador");
                             }
-
                             System.out.println("El desarrollador actual del videojuego con id: " + id + " es: " + desarrolladorActual);
-                            System.out.print("Introduce el nuevo desarrollador: "); String nuevoDesarrollador = sc.nextLine();
-                            mco.updateOne(filtro,Updates.set("desarrollador",nuevoDesarrollador));
-
-                            break;
-
-                        case "precio":
-                            if(cursor.hasNext())
-                            {
+                            System.out.print("Introduce el nuevo desarrollador: ");
+                            String nuevoDesarrollador = sc.nextLine();
+                            mco.updateOne(filtro, Updates.set("desarrollador", nuevoDesarrollador));
+                        }
+                        case "precio" -> {
+                            if (cursor.hasNext()) {
                                 resultado = (Document) cursor.next();
                                 precioActual = resultado.getDouble("precio");
                             }
-
                             System.out.println("El precio actual del videojuego con id: " + id + " es: " + precioActual);
-                            System.out.print("Introduce el nuevo precio: "); double nuevoPrecio = sc.nextDouble();
-                            mco.updateOne(filtro,Updates.set("precio",nuevoPrecio));
+                            System.out.print("Introduce el nuevo precio: ");
+                            double nuevoPrecio = sc.nextDouble();
+                            mco.updateOne(filtro, Updates.set("precio", nuevoPrecio));
+                        }
                     }
                     System.out.println("Actualización realizada");
                     tiempoEspera(1);
@@ -404,7 +462,7 @@ public class Main {
     public static void tiempoEspera(int segundos)
     {
         try {
-            Thread.sleep(segundos*1000);
+            Thread.sleep(segundos* 1000L);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -435,10 +493,6 @@ public class Main {
     public static boolean hayJuegos(MongoCollection mco)
     {
         MongoCursor cursor = mco.find().iterator();
-        if(!cursor.hasNext())
-        {
-            return false;
-        }
-        return true;
+        return cursor.hasNext();
     }
 }
